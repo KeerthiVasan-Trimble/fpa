@@ -12,26 +12,24 @@ CREATE OR REPLACE TABLE FIELD_SYSTEMS_EDW.GENERAL.OCOGS_CARVEOUTS_CONFIGURATION 
     OCOGS_COMPONENT      VARCHAR(20),
     CARVEOUTS_PERCENTAGE NUMBER(10,2),
     FLAT_RATE NUMBER(10,3),
+    NATURAL_ACCOUNT INTEGER,
+    OTHER_BA INTEGER,
     CONSTRAINT chk_mutual_exclusion CHECK (
         NOT (CARVEOUTS_PERCENTAGE IS NOT NULL AND FLAT_RATE IS NOT NULL)
     )
 );
 
 
-
 -- Insert fixed values into configuration table
 INSERT INTO FIELD_SYSTEMS_EDW.GENERAL.OCOGS_CARVEOUTS_CONFIGURATION
-    (BILLINGS_MONTH, OCOGS_COMPONENT, CARVEOUTS_PERCENTAGE, FLAT_RATE)
+    (BILLINGS_MONTH, OCOGS_COMPONENT, CARVEOUTS_PERCENTAGE, FLAT_RATE, NATURAL_ACCOUNT, OTHER_BA)
 VALUES
-    ('2026-08', 'Freight',    3.50, NULL),
-    ('2026-08', 'Variances',  1.00, NULL),
-    ('2026-08', 'Warranty',   0.50, NULL),
-    ('2026-09', 'Freight',    4.00, NULL),
-    ('2026-09', 'Variances',  1.50, NULL),
-    ('2026-09', 'Warranty',   0.50, NULL),
-    ('2026-10', 'Freight',    3.50, NULL),
-    ('2026-10', 'Variances',  1.00, NULL),
-    ('2026-10', 'Warranty',   0.50, NULL);
-
-SELECT * FROM OCOGS_CARVEOUTS_CONFIGURATION;
-
+    ('2026-08', 'Freight',    3.50, NULL, 40030, NULL),
+    ('2026-08', 'Variances',  1.00, NULL, 40030, NULL),
+    ('2026-08', 'Warranty',   0.50, NULL, 40030, NULL),
+    ('2026-09', 'Freight',    4.00, NULL, 40030, NULL),
+    ('2026-09', 'Variances',  1.50, NULL, 40030, NULL),
+    ('2026-09', 'Warranty',   0.50, NULL, 40030, NULL),
+    ('2026-10', 'Freight',    3.50, NULL, 40030, NULL),
+    ('2026-10', 'Variances',  1.00, NULL, 40030, NULL),
+    ('2026-10', 'Warranty',   0.50, NULL, 40030, NULL);
