@@ -24,12 +24,12 @@ CREATE OR REPLACE TABLE FIELD_SYSTEMS_EDW.GENERAL.OCOGS_CARVEOUTS_CONFIGURATION 
 INSERT INTO FIELD_SYSTEMS_EDW.GENERAL.OCOGS_CARVEOUTS_CONFIGURATION
     (BILLINGS_MONTH, OCOGS_COMPONENT, CARVEOUTS_PERCENTAGE, FLAT_RATE, NATURAL_ACCOUNT, OTHER_BA)
 VALUES
-    ('2026-08', 'Freight',    3.50, NULL, 40030, NULL),
-    ('2026-08', 'Variances',  1.00, NULL, 40030, NULL),
-    ('2026-08', 'Warranty',   0.50, NULL, 40030, NULL),
-    ('2026-09', 'Freight',    4.00, NULL, 40030, NULL),
-    ('2026-09', 'Variances',  1.50, NULL, 40030, NULL),
-    ('2026-09', 'Warranty',   0.50, NULL, 40030, NULL),
-    ('2026-10', 'Freight',    3.50, NULL, 40030, NULL),
-    ('2026-10', 'Variances',  1.00, NULL, 40030, NULL),
-    ('2026-10', 'Warranty',   0.50, NULL, 40030, NULL);
+    ('2026-08', 'Freight',    3.50, NULL, 40030, 533),
+    ('2026-08', 'Variances',  1.00, NULL, 40030, 533),
+    ('2026-08', 'Warranty',   0.50, NULL, 40030, 533),
+    ('2026-09', 'Freight',    4.00, NULL, 40030, 533),
+    ('2026-09', 'Variances',  1.50, NULL, 40030, 533),
+    ('2026-09', 'Warranty',   0.50, NULL, 40030, 533),
+    ('2026-10', 'Freight',    3.50, NULL, 40030, 533),
+    ('2026-10', 'Variances',  1.00, NULL, 40030, 533),
+    ('2026-10', 'Warranty',   0.50, NULL, 40030, 533);
