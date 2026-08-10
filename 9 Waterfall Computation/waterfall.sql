@@ -39,10 +39,11 @@ VALUES
     ('Carol',  6, 1, TRUE);
 
 -- ============================================================
--- OUTPUT TABLE: Amortization results aggregated by user + target month
+-- OUTPUT TABLE: Amortization results by user + source month + target month
 -- ============================================================
 CREATE OR REPLACE TABLE FIELD_SYSTEMS_EDW.GENERAL.AMORTIZATION_OUTPUT (
     user_name      VARCHAR(50)  NOT NULL,
+    current_month  VARCHAR(10)  NOT NULL,
     target_month   DATE         NOT NULL,
     amount         NUMBER(12,2) NOT NULL,
     source_months  VARCHAR      NOT NULL
@@ -51,7 +52,7 @@ CREATE OR REPLACE TABLE FIELD_SYSTEMS_EDW.GENERAL.AMORTIZATION_OUTPUT (
 -- ============================================================
 -- INSERT: Compute and store amortization schedule
 -- ============================================================
-INSERT INTO FIELD_SYSTEMS_EDW.GENERAL.AMORTIZATION_OUTPUT (user_name, target_month, amount, source_months)
+INSERT INTO FIELD_SYSTEMS_EDW.GENERAL.AMORTIZATION_OUTPUT (user_name, current_month, target_month, amount, source_months)
 WITH input_data AS (
     SELECT
         r.user_name,
@@ -103,10 +104,23 @@ with_amounts AS (
 )
 SELECT
     user_name,
+    current_month,
     month_start AS target_month,
-    SUM(amount) AS amount,
-    LISTAGG(DISTINCT current_month, ', ') WITHIN GROUP (ORDER BY current_month) AS source_months
+    amount,
+    current_month AS source_months
 FROM with_amounts
-GROUP BY user_name, month_start
-ORDER BY user_name, month_start;
+ORDER BY user_name, current_month, month_start;
+
+-- ============================================================
+-- VIEW: Aggregated amortization by user + target month
+-- ============================================================
+CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.GENERAL.AMORTIZATION_SUMMARY AS
+SELECT
+    user_name,
+    target_month,
+    SUM(amount) AS amount,
+    LISTAGG(DISTINCT source_months, ', ') WITHIN GROUP (ORDER BY source_months) AS source_months
+FROM FIELD_SYSTEMS_EDW.GENERAL.AMORTIZATION_OUTPUT
+GROUP BY user_name, target_month
+ORDER BY user_name, target_month;
 
