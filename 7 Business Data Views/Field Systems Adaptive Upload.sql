@@ -2,7 +2,7 @@
 
 
 -- Setup --
-USE ROLE FIELD_SYSTEMS_ADMIN_ROLE;
+USE ROLE FIELD_SYSTEMS_DEVELOPER_ROLE;
 
 USE DATABASE FIELD_SYSTEMS_EDW;
 USE SCHEMA BUSINESS_DATA;
@@ -133,22 +133,24 @@ SELECT
         ELSE 'N'
     END AS "Field Systems Business Area Flag"
 
-FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_EXPENSE_DETAILS
-WHERE "Cost Center Code" = '1000'
-  AND "Fiscal Period" >= 201901
-  AND "GL Divisional Group Description" = '980: FIELD SYSTEMS'
-  AND "Natural Account Code" NOT IN ('70129', '73710', '73711', '604100', '605100', '606300')
-  AND "SOB Grouping" NOT IN ('LOCALSTAT')
+FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_EXPENSE_DETAILS e
+INNER JOIN FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR fc
+    ON e."Accounting Date" = fc.CALENDAR_DATE
+WHERE e."Cost Center Code" = '1000'
+  AND fc.FISCAL_YEAR >= 2020
+  AND e."GL Divisional Group Description" = '980:FIELD SYSTEMS'
+  AND e."Natural Account Code" NOT IN ('70129', '73710', '73711', '604100', '605100', '606300')
+  AND e."SOB Grouping" NOT IN ('LOCALSTAT')
 GROUP BY
-    "Natural Account Code",
-    "Business Area Code",
-    "Base Currency Code",
-    "Cost Center Code",
-    "Cost Center",
-    "Reporting Entity Code",
-    "Reporting Entity",
-    "GAAP Subsection",
-    "GL Divisional Group Description",
-    "GL Division Description",
-    "GAAP Subsection Description",
-    "P&L Category";
+    e."Natural Account Code",
+    e."Business Area Code",
+    e."Base Currency Code",
+    e."Cost Center Code",
+    e."Cost Center",
+    e."Reporting Entity Code",
+    e."Reporting Entity",
+    e."GAAP Subsection",
+    e."GL Divisional Group Description",
+    e."GL Division Description",
+    e."GAAP Subsection Description",
+    e."P&L Category";

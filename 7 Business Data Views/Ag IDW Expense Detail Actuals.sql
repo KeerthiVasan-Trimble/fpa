@@ -2,7 +2,7 @@
 
 
 -- Setup --
-USE ROLE FIELD_SYSTEMS_ADMIN_ROLE;
+USE ROLE FIELD_SYSTEMS_DEVELOPER_ROLE;
 
 USE DATABASE FIELD_SYSTEMS_EDW;
 USE SCHEMA BUSINESS_DATA;
@@ -10,7 +10,7 @@ USE SCHEMA BUSINESS_DATA;
 USE WAREHOUSE FIELD_SYSTEMS_GENERAL_WAREHOUSE;
 
 
--- Create AG_IDW_EXPENSE_DETAIL_ACTUALS view from EBS_EXPENSE_DETAILS --
+-- Create AG_IDW_EXPENSE_DETAIL_ACTUALS view joined to Fiscal Calendar --
 CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.BUSINESS_DATA.AG_IDW_EXPENSE_DETAIL_ACTUALS AS
 SELECT
     "P&L Category",
@@ -20,20 +20,20 @@ SELECT
     CONCAT("GAAP Subsection Description", "PL Natural Account Summary") AS "Parent Level",
     "Cost Center",
     CONCAT("GAAP Subsection Description", "GL Natural Account Description") AS "Account Level",
-    "Fiscal Period",
+    fc.FISCAL_MONTH_CODE AS "Fiscal Month",
     SUM("Amount USD") AS "Amount USD"
 
-FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_EXPENSE_DETAILS
-WHERE "Business Area Code" IN ('553')
-  AND "Period Year" = YEAR(CURRENT_DATE())
+FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_EXPENSE_DETAILS e
+INNER JOIN FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR fc
+    ON e."Accounting Date" = fc.CALENDAR_DATE
+WHERE e."Business Area Code" IN ('553')
+  AND fc.FISCAL_YEAR = (SELECT FISCAL_YEAR FROM FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR WHERE CALENDAR_DATE = CURRENT_DATE())
 GROUP BY
     "P&L Category",
     "GAAP Subsection",
     "GL Natural Account Description",
     "PL Natural Account Summary",
     "GAAP Subsection Description",
-    "PL Natural Account Summary",
     "Cost Center",
-    "GL Natural Account Description",
-    "Fiscal Period"
-ORDER BY "Fiscal Period" DESC;
+    fc.FISCAL_MONTH_CODE
+ORDER BY fc.FISCAL_MONTH_CODE DESC;

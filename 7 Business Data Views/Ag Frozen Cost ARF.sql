@@ -2,7 +2,7 @@
 
 
 -- Setup --
-USE ROLE FIELD_SYSTEMS_ADMIN_ROLE;
+USE ROLE FIELD_SYSTEMS_DEVELOPER_ROLE;
 
 USE DATABASE FIELD_SYSTEMS_EDW;
 USE SCHEMA BUSINESS_DATA;
@@ -42,7 +42,7 @@ SELECT
     "Product Line",
     "Customer Order Enabled Flag"
 
-FROM FIELD_SYSTEMS_EDW.RAW_DATA."EBS Item Cost Details"
+FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_ITEM_COST_DETAILS
 WHERE "Cost Type" = 'Frozen'
   AND "Organization Code" = 'ARF'
   AND "Inventory Item Status Code" IN ('Active', 'CEM Active', 'MFG Active', 'NLS Active', 'Obsolete', 'Pending', 'Prototype', 'Replaced')
