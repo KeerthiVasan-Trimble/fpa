@@ -18,14 +18,14 @@ class FiscalCalendar:
         if self._initialized:
             return
         session = get_active_session()
-        self._df = session.table("FIELD_SYSTEMS_EDW.GENERAL.DIMENSION_FISCAL_CALENDAR").to_pandas()
+        self._df = session.table("FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR").to_pandas()
         date_cols = [
             "CALENDAR_DATE", "FISCAL_MONTH_START", "FISCAL_QUARTER_START",
             "FISCAL_YEAR_START", "FISCAL_MONTH_END", "FISCAL_QUARTER_END", "FISCAL_YEAR_END"
         ]
         for col in date_cols:
             self._df[col] = pd.to_datetime(self._df[col]).dt.date
-        self._events_df = session.table("FIELD_SYSTEMS_EDW.GENERAL.FISCAL_CALENDAR_EVENTS").to_pandas()
+        self._events_df = session.table("FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.FISCAL_CALENDAR_EVENTS").to_pandas()
         self._events_df["CALENDAR_DATE"] = pd.to_datetime(self._events_df["CALENDAR_DATE"]).dt.date
         self._initialized = True
 
@@ -185,33 +185,3 @@ print(f"14. get_events_by_quarter('2026-Q1'):    {len(fc.get_events_by_quarter('
 print(f"15. get_events_by_year(2026):            {len(fc.get_events_by_year(2026))} events")
 print(f"16. is_freeze_date('2026-01-30'):        {fc.is_freeze_date('2026-01-30')}")
 print(f"17. is_pay_day('2026-01-16'):            {fc.is_pay_day('2026-01-16')}")
-
-
-# --- SQL for tracking (one-time setup) ---
-#
-# CREATE TABLE IF NOT EXISTS FIELD_SYSTEMS_EDW.GENERAL.FISCAL_CALENDAR_EVENTS (
-#     CALENDAR_DATE       DATE         NOT NULL,
-#     EVENT_TYPE          VARCHAR(50)  NOT NULL,
-#     FISCAL_MONTH_CODE   VARCHAR(10),
-#     FISCAL_QUARTER_CODE VARCHAR(10),
-#     FISCAL_YEAR         NUMBER(4, 0),
-#     DESCRIPTION         VARCHAR(255),
-#     CREATED_BY          VARCHAR(100),
-#     CREATED_AT          TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP()
-# );
-#
-# INSERT INTO FIELD_SYSTEMS_EDW.GENERAL.FISCAL_CALENDAR_EVENTS
-#     (CALENDAR_DATE, EVENT_TYPE, FISCAL_MONTH_CODE, FISCAL_QUARTER_CODE, FISCAL_YEAR, DESCRIPTION, CREATED_BY)
-# VALUES
-#     ('2026-01-30', 'FREEZE_DATE',       '2026-M01', '2026-Q1', 2026, 'Month 1 freeze',           'KKUMARA'),
-#     ('2026-01-16', 'PAY_DAY',           '2026-M01', '2026-Q1', 2026, 'Mid-month payday',         'KKUMARA'),
-#     ('2026-01-31', 'PAY_DAY',           '2026-M01', '2026-Q1', 2026, 'End-month payday',         'KKUMARA'),
-#     ('2026-01-10', 'CORPORATE_ROLLUP',  '2026-M01', '2026-Q1', 2026, 'Q1 first rollup (M01)',    'KKUMARA'),
-#     ('2026-01-24', 'CORPORATE_ROLLUP',  '2026-M01', '2026-Q1', 2026, 'Q1 second rollup (M01)',   'KKUMARA'),
-#     ('2026-02-14', 'CORPORATE_ROLLUP',  '2026-M02', '2026-Q1', 2026, 'Q1 rollup (M02)',          'KKUMARA'),
-#     ('2026-02-27', 'FREEZE_DATE',       '2026-M02', '2026-Q1', 2026, 'Month 2 freeze',           'KKUMARA'),
-#     ('2026-02-15', 'PAY_DAY',           '2026-M02', '2026-Q1', 2026, 'Mid-month payday',         'KKUMARA'),
-#     ('2026-02-28', 'PAY_DAY',           '2026-M02', '2026-Q1', 2026, 'End-month payday',         'KKUMARA'),
-#     ('2026-03-14', 'CORPORATE_ROLLUP',  '2026-M03', '2026-Q1', 2026, 'Q1 rollup (M03)',          'KKUMARA'),
-#     ('2026-08-01', 'FREEZE_DATE',       '2026-M07', '2026-Q3', 2026, 'Month 7 freeze',           'KKUMARA'),
-#     ('2026-08-15', 'PAY_DAY',           '2026-M07', '2026-Q3', 2026, 'Mid-month payday',         'KKUMARA');
