@@ -68,22 +68,22 @@ class GeneralLedger:
         session = get_active_session()
 
         # Business Group
-        bg_df = session.table("FIELD_SYSTEMS_EDW.GENERAL.DIMENSION_BUSINESS_GROUP").select("BUSINESS_AREA", "DESCRIPTION").collect()
+        bg_df = session.table("FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_GL_BUSINESS_GROUP").select("BUSINESS_AREA", "DESCRIPTION").collect()
         self._bg_lookup = {row["BUSINESS_AREA"]: row["DESCRIPTION"] for row in bg_df}
         self._bg_reverse = {row["DESCRIPTION"]: row["BUSINESS_AREA"] for row in bg_df}
 
         # Location
-        loc_df = session.table("FIELD_SYSTEMS_EDW.GENERAL.DIMENSION_LOCATION").select("LOCATION", "DESCRIPTION").collect()
+        loc_df = session.table("FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_GL_LOCATION").select("LOCATION", "DESCRIPTION").collect()
         self._loc_lookup = {row["LOCATION"]: row["DESCRIPTION"] for row in loc_df}
         self._loc_reverse = {row["DESCRIPTION"]: row["LOCATION"] for row in loc_df}
 
         # Cost Center
-        cc_df = session.table("FIELD_SYSTEMS_EDW.GENERAL.DIMENSION_COST_CENTER").select("COST_CENTER", "DESCRIPTION").collect()
+        cc_df = session.table("FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_GL_COST_CENTER").select("COST_CENTER", "DESCRIPTION").collect()
         self._cc_lookup = {row["COST_CENTER"]: row["DESCRIPTION"] for row in cc_df}
         self._cc_reverse = {row["DESCRIPTION"]: row["COST_CENTER"] for row in cc_df}
 
         # Natural Account
-        na_df = session.table("FIELD_SYSTEMS_EDW.GENERAL.DIMENSION_NATURAL_ACCOUNT").select("NATURAL_ACCOUNT", "DESCRIPTION").collect()
+        na_df = session.table("FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_GL_NATURAL_ACCOUNT").select("NATURAL_ACCOUNT", "DESCRIPTION").collect()
         self._na_lookup = {row["NATURAL_ACCOUNT"]: row["DESCRIPTION"] for row in na_df}
         self._na_reverse = {row["DESCRIPTION"]: row["NATURAL_ACCOUNT"] for row in na_df}
 
