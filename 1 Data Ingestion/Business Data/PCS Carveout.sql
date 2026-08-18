@@ -13,9 +13,14 @@ USE WAREHOUSE FIELD_SYSTEMS_GENERAL_WAREHOUSE;
 -- Create PCS Carveout view dynamically using current fiscal year --
 DECLARE
     yr VARCHAR;
+    full_yr VARCHAR;
     sql_text VARCHAR;
 BEGIN
     SELECT RIGHT(FISCAL_YEAR::VARCHAR, 2) INTO :yr
+    FROM FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR
+    WHERE CALENDAR_DATE = CURRENT_DATE();
+
+    SELECT FISCAL_YEAR::VARCHAR INTO :full_yr
     FROM FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR
     WHERE CALENDAR_DATE = CURRENT_DATE();
 
@@ -23,18 +28,18 @@ BEGIN
     CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.BUSINESS_DATA.PCS_CARVEOUT AS
     SELECT
         "GL Business Area Code",
-        SUM("Jan_' || yr || '") AS "Jan_' || yr || '",
-        SUM("Feb_' || yr || '") AS "Feb_' || yr || '",
-        SUM("Mar_' || yr || '") AS "Mar_' || yr || '",
-        SUM("Apr_' || yr || '") AS "Apr_' || yr || '",
-        SUM("May_' || yr || '") AS "May_' || yr || '",
-        SUM("Jun_' || yr || '") AS "Jun_' || yr || '",
-        SUM("Jul_' || yr || '") AS "Jul_' || yr || '",
-        SUM("Aug_' || yr || '") AS "Aug_' || yr || '",
-        SUM("Sep_' || yr || '") AS "Sep_' || yr || '",
-        SUM("Oct_' || yr || '") AS "Oct_' || yr || '",
-        SUM("Nov_' || yr || '") AS "Nov_' || yr || '",
-        SUM("Dec_' || yr || '") AS "Dec_' || yr || '"
+        SUM("Jan_' || yr || '") AS "' || full_yr || '-M01",
+        SUM("Feb_' || yr || '") AS "' || full_yr || '-M02",
+        SUM("Mar_' || yr || '") AS "' || full_yr || '-M03",
+        SUM("Apr_' || yr || '") AS "' || full_yr || '-M04",
+        SUM("May_' || yr || '") AS "' || full_yr || '-M05",
+        SUM("Jun_' || yr || '") AS "' || full_yr || '-M06",
+        SUM("Jul_' || yr || '") AS "' || full_yr || '-M07",
+        SUM("Aug_' || yr || '") AS "' || full_yr || '-M08",
+        SUM("Sep_' || yr || '") AS "' || full_yr || '-M09",
+        SUM("Oct_' || yr || '") AS "' || full_yr || '-M10",
+        SUM("Nov_' || yr || '") AS "' || full_yr || '-M11",
+        SUM("Dec_' || yr || '") AS "' || full_yr || '-M12"
     FROM FIELD_SYSTEMS_EDW.RAW_DATA.REVPRO_WATERFALL
     WHERE " Revenue Segments" IN (''100.553.1000.40012.000.0000.00000'', ''380.553.1000.40012.000.0000.00000'')
       AND "Currency" IN (''Reporting'')
