@@ -47,28 +47,39 @@ fiscal_months AS (
     FROM (
         SELECT DISTINCT FISCAL_MONTH_START, WEEKS_IN_MONTH
         FROM FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR
-        WHERE FISCAL_MONTH_START >= DATE_TRUNC('MONTH', CURRENT_DATE())
     )
+),
+billing_anchor AS (
+    SELECT
+        cb.*,
+        fm.MONTH_SEQ AS BILLING_SEQ
+    FROM carveout_base cb
+    JOIN fiscal_months fm
+        ON fm.MONTH_START <= TO_DATE(cb.BILLING_MONTH || '-01', 'YYYY-MM-DD')
+    QUALIFY ROW_NUMBER() OVER (
+        PARTITION BY cb.RECEIVER_CODE, cb.BILLING_MONTH, cb.OTHER_BA, cb.NATURAL_ACCOUNT
+        ORDER BY fm.MONTH_START DESC
+    ) = 1
 ),
 expanded AS (
     SELECT
-        cb.RECEIVER_CODE,
-        cb.BILLING_MONTH,
-        cb.CARVEOUT_AMOUNT,
-        cb.OTHER_BA,
-        cb.NATURAL_ACCOUNT,
-        cb.HALF_MONTH,
-        cb.MONTHS_IN_FUTURE,
+        ba.RECEIVER_CODE,
+        ba.BILLING_MONTH,
+        ba.CARVEOUT_AMOUNT,
+        ba.OTHER_BA,
+        ba.NATURAL_ACCOUNT,
+        ba.HALF_MONTH,
+        ba.MONTHS_IN_FUTURE,
         fm.WEEKS_IN_MONTH,
         SUM(fm.WEEKS_IN_MONTH) OVER (
-            PARTITION BY cb.RECEIVER_CODE, cb.BILLING_MONTH
+            PARTITION BY ba.RECEIVER_CODE, ba.BILLING_MONTH
         ) AS TOTAL_WEEKS,
         fm.MONTH_START,
-        fm.MONTH_SEQ - cb.MONTH_LAG AS MONTH_NUMBER
-    FROM carveout_base cb
+        fm.MONTH_SEQ - ba.BILLING_SEQ - ba.MONTH_LAG AS MONTH_NUMBER
+    FROM billing_anchor ba
     JOIN fiscal_months fm
-        ON fm.MONTH_SEQ BETWEEN cb.MONTH_LAG + 1
-                              AND cb.MONTH_LAG + cb.MONTHS_IN_FUTURE + IFF(cb.HALF_MONTH = 'TRUE', 1, 0)
+        ON fm.MONTH_SEQ BETWEEN ba.BILLING_SEQ + ba.MONTH_LAG + 1
+                              AND ba.BILLING_SEQ + ba.MONTH_LAG + ba.MONTHS_IN_FUTURE + IFF(ba.HALF_MONTH = 'TRUE', 1, 0)
 )
 SELECT
     RECEIVER_CODE,
