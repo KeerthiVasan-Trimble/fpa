@@ -16,7 +16,7 @@ WITH CURRENT_FISCAL AS (
     WHERE CALENDAR_DATE = CURRENT_DATE
 )
 SELECT
-    e."Fiscal Month" AS BILLING_MONTH,
+    LEFT(e."Fiscal Month", 4) || '-' || RIGHT(e."Fiscal Month", 2) AS BILLING_MONTH,
     'COGS' AS CATEGORY,
     e."PL Natural Account Summary" AS COMPONENT_NAME,
     SUM(e."Amount USD") AS AMOUNT
