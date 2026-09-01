@@ -16,7 +16,7 @@ BEGIN
     sql_text := '
     CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.COMPUTATIONAL_COMPONENT.VIEW_AG_PCS_WATERFALL AS
     SELECT
-        "GL Business Area Code",
+        ''PCS Waterfall'' AS ROW_NAME,
         "' || full_yr || '-M01" AS "' || full_yr || '-01",
         "' || full_yr || '-M02" AS "' || full_yr || '-02",
         "' || full_yr || '-M03" AS "' || full_yr || '-03",

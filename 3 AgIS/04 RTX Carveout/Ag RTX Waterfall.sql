@@ -16,7 +16,7 @@ BEGIN
     sql_text := '
     CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.COMPUTATIONAL_COMPONENT.VIEW_AG_RTX_WATERFALL AS
     SELECT
-        "Business Area Name",
+        ''RTX Waterfall'' AS ROW_NAME,
         SUM("' || full_yr || '-M01") AS "' || full_yr || '-01",
         SUM("' || full_yr || '-M02") AS "' || full_yr || '-02",
         SUM("' || full_yr || '-M03") AS "' || full_yr || '-03",
@@ -30,7 +30,7 @@ BEGIN
         SUM("' || full_yr || '-M11") AS "' || full_yr || '-11",
         SUM("' || full_yr || '-M12") AS "' || full_yr || '-12"
     FROM FIELD_SYSTEMS_EDW.BUSINESS_DATA.RTX_CARVEOUT
-    GROUP BY "Business Area Name"';
+    GROUP BY ROW_NAME';
 
     EXECUTE IMMEDIATE sql_text;
 END;
