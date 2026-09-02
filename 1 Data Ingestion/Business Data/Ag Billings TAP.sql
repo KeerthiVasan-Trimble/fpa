@@ -12,26 +12,36 @@ USE WAREHOUSE FIELD_SYSTEMS_GENERAL_WAREHOUSE;
 
 -- Create TAP view from ONE_AG joined to Fiscal Calendar --
 CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.BUSINESS_DATA.AG_BILLINGS_TAP AS
+WITH deduplicated AS (
+    SELECT DISTINCT
+        "Grouping",
+        "item",
+        "Item Description",
+        "TAP Inclusion Type",
+        fc.FISCAL_MONTH_CODE AS "Fiscal Month",
+        "Quantity Invoiced",
+        "TAP Carveout"
+    FROM FIELD_SYSTEMS_EDW.RAW_DATA.ONE_AG o
+    INNER JOIN FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR fc
+        ON o."Invoice Transaction Date" = fc.CALENDAR_DATE
+    WHERE "Sales Order" IS NULL
+      AND "item" NOT IN ('108993-40', '108993-60', '108993-61', '108993-62', '108993-63', '108993-70', '108993-75', '108993-95')
+      AND "name" IN ('PTx Trimble MSDA', 'PTx Trimble Supply Agreement')
+      AND fc.FISCAL_YEAR = (SELECT FISCAL_YEAR FROM FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR WHERE CALENDAR_DATE = CURRENT_DATE())
+)
 SELECT
     "Grouping",
     "item",
     "Item Description",
     "TAP Inclusion Type",
-    fc.FISCAL_MONTH_CODE AS "Fiscal Month",
+    "Fiscal Month",
     SUM("Quantity Invoiced") AS "Quantity Invoiced",
     AVG("TAP Carveout") AS "TAP Carveout",
     SUM("Quantity Invoiced" * "TAP Carveout") AS "TAP Extended"
-
-FROM FIELD_SYSTEMS_EDW.RAW_DATA.ONE_AG o
-INNER JOIN FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR fc
-    ON o."Invoice Transaction Date" = fc.CALENDAR_DATE
-WHERE "Sales Order" IS NULL
-  AND "item" NOT IN ('108993-40', '108993-60', '108993-61', '108993-62', '108993-63', '108993-70', '108993-75', '108993-95')
-  AND "name" IN ('PTx Trimble MSDA', 'PTx Trimble Supply Agreement')
-  AND fc.FISCAL_YEAR = (SELECT FISCAL_YEAR FROM FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR WHERE CALENDAR_DATE = CURRENT_DATE())
+FROM deduplicated
 GROUP BY
     "Grouping",
     "item",
     "Item Description",
     "TAP Inclusion Type",
-    fc.FISCAL_MONTH_CODE;
+    "Fiscal Month";

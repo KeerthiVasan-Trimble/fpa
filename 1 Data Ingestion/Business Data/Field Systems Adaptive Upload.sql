@@ -12,6 +12,31 @@ USE WAREHOUSE FIELD_SYSTEMS_GENERAL_WAREHOUSE;
 
 -- Create Field Systems Adaptive Upload view --
 CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.BUSINESS_DATA.FIELD_SYSTEMS_ADAPTIVE_UPLOAD AS
+WITH deduplicated AS (
+    SELECT DISTINCT
+        "Natural Account Code",
+        "Business Area Code",
+        "Base Currency Code",
+        "Cost Center Code",
+        "Cost Center",
+        "Reporting Entity Code",
+        "Reporting Entity",
+        "P&L Category",
+        "Amount Func Currency",
+        "GAAP Subsection",
+        "GL Divisional Group Description",
+        "GL Division Description",
+        "GAAP Subsection Description",
+        "Amount USD"
+    FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_EXPENSE_DETAILS e
+    INNER JOIN FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR fc
+        ON e."Accounting Date" = fc.CALENDAR_DATE
+    WHERE e."Cost Center Code" = '1000'
+      AND fc.FISCAL_YEAR >= 2020
+      AND e."GL Divisional Group Description" = '980:FIELD SYSTEMS'
+      AND e."Natural Account Code" NOT IN ('70129', '73710', '73711', '604100', '605100', '606300')
+      AND e."SOB Grouping" NOT IN ('LOCALSTAT')
+)
 SELECT
     CONCAT('CAPL.', "Natural Account Code") AS "Income Statement Account",
     CONCAT("Business Area Code", '-', CASE WHEN "Base Currency Code" = 'KPW' THEN 'KRW' ELSE "Base Currency Code" END) AS "Adaptive Level",
@@ -132,25 +157,17 @@ SELECT
         WHEN "Business Area Code" = '217' THEN 'Y' -- Military - 217:MILITARY ADVANCED SYSTEMS
         ELSE 'N'
     END AS "Field Systems Business Area Flag"
-
-FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_EXPENSE_DETAILS e
-INNER JOIN FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR fc
-    ON e."Accounting Date" = fc.CALENDAR_DATE
-WHERE e."Cost Center Code" = '1000'
-  AND fc.FISCAL_YEAR >= 2020
-  AND e."GL Divisional Group Description" = '980:FIELD SYSTEMS'
-  AND e."Natural Account Code" NOT IN ('70129', '73710', '73711', '604100', '605100', '606300')
-  AND e."SOB Grouping" NOT IN ('LOCALSTAT')
+FROM deduplicated
 GROUP BY
-    e."Natural Account Code",
-    e."Business Area Code",
-    e."Base Currency Code",
-    e."Cost Center Code",
-    e."Cost Center",
-    e."Reporting Entity Code",
-    e."Reporting Entity",
-    e."GAAP Subsection",
-    e."GL Divisional Group Description",
-    e."GL Division Description",
-    e."GAAP Subsection Description",
-    e."P&L Category";
+    "Natural Account Code",
+    "Business Area Code",
+    "Base Currency Code",
+    "Cost Center Code",
+    "Cost Center",
+    "Reporting Entity Code",
+    "Reporting Entity",
+    "GAAP Subsection",
+    "GL Divisional Group Description",
+    "GL Division Description",
+    "GAAP Subsection Description",
+    "P&L Category";

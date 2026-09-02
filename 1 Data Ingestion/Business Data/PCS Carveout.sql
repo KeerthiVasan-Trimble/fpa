@@ -26,6 +26,27 @@ BEGIN
 
     sql_text := '
     CREATE OR REPLACE VIEW FIELD_SYSTEMS_EDW.BUSINESS_DATA.PCS_CARVEOUT AS
+    WITH deduplicated AS (
+        SELECT DISTINCT
+            "GL Business Area Code",
+            "Jan_' || yr || '",
+            "Feb_' || yr || '",
+            "Mar_' || yr || '",
+            "Apr_' || yr || '",
+            "May_' || yr || '",
+            "Jun_' || yr || '",
+            "Jul_' || yr || '",
+            "Aug_' || yr || '",
+            "Sep_' || yr || '",
+            "Oct_' || yr || '",
+            "Nov_' || yr || '",
+            "Dec_' || yr || '"
+        FROM FIELD_SYSTEMS_EDW.RAW_DATA.REVPRO_WATERFALL
+        WHERE " Revenue Segments" IN (''100.553.1000.40012.000.0000.00000'', ''380.553.1000.40012.000.0000.00000'')
+          AND "Currency" IN (''Reporting'')
+          AND "Data Element" IN (''Net Revenue - Actuals'')
+          AND "GL Business Area Code" IN (''553'')
+    )
     SELECT
         "GL Business Area Code",
         SUM("Jan_' || yr || '") AS "' || full_yr || '-M01",
@@ -40,11 +61,7 @@ BEGIN
         SUM("Oct_' || yr || '") AS "' || full_yr || '-M10",
         SUM("Nov_' || yr || '") AS "' || full_yr || '-M11",
         SUM("Dec_' || yr || '") AS "' || full_yr || '-M12"
-    FROM FIELD_SYSTEMS_EDW.RAW_DATA.REVPRO_WATERFALL
-    WHERE " Revenue Segments" IN (''100.553.1000.40012.000.0000.00000'', ''380.553.1000.40012.000.0000.00000'')
-      AND "Currency" IN (''Reporting'')
-      AND "Data Element" IN (''Net Revenue - Actuals'')
-      AND "GL Business Area Code" IN (''553'')
+    FROM deduplicated
     GROUP BY
         "GL Business Area Code"';
 
