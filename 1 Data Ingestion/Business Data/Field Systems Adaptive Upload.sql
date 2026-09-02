@@ -29,10 +29,8 @@ WITH deduplicated AS (
         "GAAP Subsection Description",
         "Amount USD"
     FROM FIELD_SYSTEMS_EDW.RAW_DATA.EBS_EXPENSE_DETAILS e
-    INNER JOIN FIELD_SYSTEMS_EDW.ARCHITECTURAL_COMPONENT.DIMENSION_FISCAL_CALENDAR fc
-        ON e."Accounting Date" = fc.CALENDAR_DATE
     WHERE e."Cost Center Code" = '1000'
-      AND fc.FISCAL_YEAR >= 2020
+      AND YEAR(e."Accounting Date") >= 2020
       AND e."GL Divisional Group Description" = '980:FIELD SYSTEMS'
       AND e."Natural Account Code" NOT IN ('70129', '73710', '73711', '604100', '605100', '606300')
       AND e."SOB Grouping" NOT IN ('LOCALSTAT')

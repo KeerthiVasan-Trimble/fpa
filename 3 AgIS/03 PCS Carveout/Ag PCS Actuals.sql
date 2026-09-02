@@ -23,7 +23,8 @@ SELECT REPLACE(e."Fiscal Month", '-M', '-') AS "Fiscal Month"
        , SUM(e."Amount USD") AS REVENUE
 FROM FIELD_SYSTEMS_EDW.BUSINESS_DATA.AG_IDW_EXPENSE_DETAIL_ACTUALS e
 CROSS JOIN CURRENT_FISCAL cf
-WHERE (e."GL Natural Account Description" LIKE '40012%' OR e."GL Natural Account Description" LIKE '40025%')
+WHERE (e."P&L Category" = '1.REVENUE') 
+  AND (e."GL Natural Account Description" LIKE '40012%' OR e."GL Natural Account Description" LIKE '40025%')
   AND LEFT(e."Fiscal Month", 4) = cf.FISCAL_YEAR::VARCHAR
   AND e."Fiscal Month" < cf.FISCAL_MONTH_CODE
 GROUP BY e."Fiscal Month"
