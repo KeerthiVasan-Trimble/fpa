@@ -33,7 +33,7 @@ SELECT
     CONCAT("GAAP Subsection Description", "PL Natural Account Summary") AS "Parent Level",
     "Cost Center",
     CONCAT("GAAP Subsection Description", "GL Natural Account Description") AS "Account Level",
-    "Fiscal Period",
+    LEFT("Fiscal Period"::VARCHAR, 4) || '-M' || RIGHT("Fiscal Period"::VARCHAR, 2) AS "Fiscal Month",
     SUM("Amount USD") AS "Amount USD"
 FROM deduplicated
 GROUP BY
@@ -44,4 +44,4 @@ GROUP BY
     "GAAP Subsection Description",
     "Cost Center",
     "Fiscal Period"
-ORDER BY "Fiscal Period" DESC;
+ORDER BY "Fiscal Month" DESC;
