@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: int_bu_fg_region
+    description: Active forecasting groups cross joined with every region.
+  - name: bu_unit_price
+    description: Unit price (FG ASP) per FG x Region x Fiscal Month.
+    columns:
+      - name: unit_price_code
+        tests: [unique, not_null]
+  - name: bu_unit_sales
+    description: Units sold per FG x Region x Fiscal Month (from Sigma input); only rows with units.
+    columns:
+      - name: unit_sales_code
+        tests: [unique, not_null]
+      - name: units_sold
+        tests: [not_null]
+  - name: bu_revenue
+    description: Bottoms-Up billings = unit price x units sold, with FX to USD.
+    columns:
+      - name: revenue_code
+        tests: [unique, not_null]
+      - name: billings_usd
+        tests: [not_null]
+  - name: bu_monthly_summary
+    description: Billings by billing month and region.

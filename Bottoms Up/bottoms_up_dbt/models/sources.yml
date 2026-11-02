@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: general
+    database: FIELD_SYSTEMS_EDW
+    schema: GENERAL
+    tables:
+      - name: regions
+        identifier: REGIONS
+      - name: forex
+        identifier: FOREX
+      - name: forecasting_group
+        identifier: BU_FORECASTING_GROUP
+      # Placeholder for the Sigma unit-sales input. When the Sigma table exists,
+      # change schema/identifier here (e.g. SIGMA_WRITEBACK.SIGDS_<id>).
+      - name: unit_sales_input
+        identifier: BU_UNIT_SALES_INPUT
+
+  - name: architecture
+    database: FIELD_SYSTEMS_EDW
+    schema: ARCHITECTURAL_COMPONENT
+    tables:
+      - name: fiscal_calendar
+        identifier: DIMENSION_FISCAL_CALENDAR
+      - name: gl_business_group
+        identifier: DIMENSION_GL_BUSINESS_GROUP
+      - name: gl_natural_account
+        identifier: DIMENSION_GL_NATURAL_ACCOUNT
+      - name: gl_cost_center
+        identifier: DIMENSION_GL_COST_CENTER
+      - name: gl_location
+        identifier: DIMENSION_GL_LOCATION

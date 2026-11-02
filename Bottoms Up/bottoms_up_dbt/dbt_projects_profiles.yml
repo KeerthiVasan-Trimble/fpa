@@ -1,0 +1,12 @@
+bottoms_up_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: 'not needed'
+      user: 'not needed'
+      role: FIELD_SYSTEMS_DEVELOPER_ROLE
+      database: FIELD_SYSTEMS_EDW
+      warehouse: GENERAL
+      schema: GENERAL
+      threads: 4
